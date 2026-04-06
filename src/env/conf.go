@@ -135,6 +135,7 @@ func (c Conf) save(w io.Writer) error {
 	// clear defaults before writing, we don't need to save defaults
 	for name, env := range c.Envs {
 		if env == nil {
+			delete(c.Envs, name)
 			continue
 		}
 		if env.Directory == Default.Directory {
@@ -145,13 +146,13 @@ func (c Conf) save(w io.Writer) error {
 				env.Directory = rel
 			}
 		}
-		if env.Timeout != Default.Timeout {
+		if env.Timeout == Default.Timeout {
 			env.Timeout = 0
 		}
 		c.Envs[name] = env
 	}
 
-	if len(c.Envs) < 0 {
+	if len(c.Envs) == 0 {
 		return ErrNoEnvironmentsDefined
 	}
 
