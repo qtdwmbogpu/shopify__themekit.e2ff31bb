@@ -54,13 +54,13 @@ func (env *Env) validate() error {
 		errors = append(errors, "missing theme_id")
 	} else if env.ThemeID == "live" {
 		errors = append(errors, "'live' is no longer supported for theme_id. Please use an ID instead")
-	} else if _, err := strconv.ParseInt(env.ThemeID, 10, 32); err != nil {
+	} else if _, err := strconv.ParseInt(env.ThemeID, 10, 64); err != nil {
 		errors = append(errors, "invalid theme_id")
 	}
 
 	if len(env.Domain) == 0 {
 		errors = append(errors, "missing store domain")
-	} else if !strings.HasSuffix(env.Domain, "myshopify.com") {
+	} else if !strings.HasSuffix(env.Domain, "myshopify.com") && !strings.HasSuffix(env.Domain, "myshopify.io") {
 		errors = append(errors, "invalid store domain must end in '.myshopify.com'")
 	}
 
@@ -73,7 +73,7 @@ func (env *Env) validate() error {
 	errors = append(errors, dirErrors...)
 
 	if len(errors) > 0 {
-		return fmt.Errorf("invalid environment [%s]: (%v)", env.Name, strings.Join(errors, ";"))
+		return fmt.Errorf("invalid environment [%s]: (%v)", env.Name, strings.Join(errors, ","))
 	}
 
 	return nil
