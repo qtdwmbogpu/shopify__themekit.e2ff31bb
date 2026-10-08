@@ -35,13 +35,13 @@ func (releases releasesList) get(ver string) release {
 	sort.Slice(releases, func(i, j int) bool {
 		iversion, _ := version.NewVersion(releases[i].Version)
 		jversion, _ := version.NewVersion(releases[j].Version)
-		return iversion.LessThan(jversion)
+		return jversion.LessThan(iversion)
 	})
 
 	if ver == "latest" {
 		for _, release := range releases {
 			releaseVersion, _ := version.NewVersion(release.Version)
-			if releaseVersion.Metadata() == "" || releaseVersion.Prerelease() == "" {
+			if releaseVersion.Metadata() == "" && releaseVersion.Prerelease() == "" {
 				return release
 			}
 		}
@@ -49,7 +49,7 @@ func (releases releasesList) get(ver string) release {
 		requestedVersion, _ := version.NewVersion(ver)
 		for _, release := range releases {
 			releaseVersion, _ := version.NewVersion(release.Version)
-			if requestedVersion.LessThan(releaseVersion) {
+			if requestedVersion.Equal(releaseVersion) {
 				return release
 			}
 		}
