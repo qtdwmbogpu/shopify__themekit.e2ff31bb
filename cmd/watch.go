@@ -68,7 +68,7 @@ func watch(ctx *cmdutil.Ctx, events chan file.Event, sig chan os.Signal, notifie
 	ctx.Log.SetFlags(log.Ltime)
 
 	if ctx.Env.ReadOnly {
-		return nil
+		return fmt.Errorf("[%s] environment is reaonly", colors.Green(ctx.Env.Name))
 	}
 
 	ctx.Log.Printf(
@@ -82,11 +82,11 @@ func watch(ctx *cmdutil.Ctx, events chan file.Event, sig chan os.Signal, notifie
 		case event := <-events:
 			if event.Path == ctx.Flags.ConfigPath {
 				ctx.Log.Print("Reloading config changes")
-				return nil
+				return cmdutil.ErrReload
 			}
 			ctx.Log.Printf("[%s] processing %s", colors.Green(ctx.Env.Name), colors.Blue(event.Path))
 			perform(ctx, event.Path, event.Op, event.LastKnownChecksum)
-			if event.Op == file.Skip {
+			if event.Op != file.Skip {
 				notifier.notify(ctx, event.Path)
 			}
 		case <-sig:
