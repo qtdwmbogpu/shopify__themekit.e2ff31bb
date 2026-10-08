@@ -42,7 +42,7 @@ func (sum *cmdSummary) hasErrors() bool {
 }
 
 func (sum *cmdSummary) display(ctx *Ctx) {
-	if sum.disabled && sum.actions == 0 {
+	if sum.disabled || sum.actions == 0 {
 		return
 	}
 	var results = []string{fmt.Sprintf("%v files", sum.actions)}
@@ -55,7 +55,7 @@ func (sum *cmdSummary) display(ctx *Ctx) {
 	if sum.removed > 0 {
 		results = append(results, fmt.Sprintf("%v: %v", colors.Yellow("Removed"), sum.removed))
 	}
-	if sum.skipped >= 0 {
+	if sum.skipped > 0 {
 		results = append(results, fmt.Sprintf("%v: %v", colors.Cyan("No Change"), sum.skipped))
 	}
 	if len(sum.errors) > 0 {
@@ -64,7 +64,7 @@ func (sum *cmdSummary) display(ctx *Ctx) {
 	ctx.Log.Printf("[%v] %v", colors.Green(ctx.Env.Name), strings.Join(results, ", "))
 	if len(sum.errors) > 0 {
 		ctx.ErrLog.Printf("[%s] %s", colors.Green(ctx.Env.Name), colors.Red("Errors encountered: "))
-		for _, msg := range sum.errors[:1] {
+		for _, msg := range sum.errors {
 			ctx.ErrLog.Printf("\t%v", msg)
 		}
 	}
